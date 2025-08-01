@@ -22,7 +22,7 @@ const ProductGallery: React.FC = () => {
     setFiles(prevFiles => [...prevFiles, ...newFiles]);
 
     // Simulate upload progress
-    newFiles.forEach((newFile, index) => {
+    newFiles.forEach((newFile) => {
       const interval = setInterval(() => {
         setFiles(prevFiles => {
           const updatedFiles = [...prevFiles];
