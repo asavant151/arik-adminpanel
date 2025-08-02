@@ -13,9 +13,13 @@ const OrderDetails: React.FC = () => {
 
   if (!order) {
     return (
-      <div className="flex flex-col items-center justify-center">
-        <img src={noOrderImg} alt="" className="w-[500px] h-[500px]" />{" "}
-        <p className="font-rubik font-semibold text-2xl !text-[#232321]/80">
+      <div className="flex flex-col items-center justify-center p-4">
+        <img
+          src={noOrderImg}
+          alt="No order found"
+          className="w-full max-w-[500px] h-auto max-h-[500px]"
+        />
+        <p className="font-rubik font-semibold text-xl md:text-2xl !text-[#232321]/80 mt-4 text-center">
           No Order Found
         </p>
       </div>
@@ -29,8 +33,8 @@ const OrderDetails: React.FC = () => {
 
   const taxRate = 0.2; // 20% tax
   const tax = subtotal * taxRate;
-  const discount = order.discount || 0; // No need for optional chaining here
-  const shippingRate = order.shippingRate || 0; // No need for optional chaining here
+  const discount = order.discount || 0;
+  const shippingRate = order.shippingRate || 0;
   const total = subtotal + tax + shippingRate - discount;
 
   const handlePrint = () => {
@@ -41,21 +45,23 @@ const OrderDetails: React.FC = () => {
       document.body.innerHTML = printContent.innerHTML;
       window.print();
       document.body.innerHTML = originalContent;
-      window.location.reload(); // To restore the original content
+      window.location.reload();
     }
   };
 
   return (
-    <>
+    <div className="p-4 md:p-6">
       <div className="mb-6">
         <Title
           title="Orders Details"
           subtitle="Home > Order List > Order Details"
         />
       </div>
-      <div className="py-6 px-4 bg-[#fafafa] rounded-2xl mb-6">
-        <div className="flex items-center gap-x-6 mb-4">
-          <h1 className="text-xl font-rubik font-semibold">
+
+      {/* Order Header Section */}
+      <div className="py-4 md:py-6 px-4 bg-[#fafafa] rounded-2xl mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
+          <h1 className="text-lg md:text-xl font-rubik font-semibold">
             Orders ID: {orderId}
           </h1>
           <div
@@ -70,16 +76,16 @@ const OrderDetails: React.FC = () => {
             {order?.status}
           </div>
         </div>
-        <div className="flex flex-col md:flex-row md:items-center items-start md:justify-between mb-4">
-          <div>
+
+        {/* Filters and Actions */}
+        <div className="flex flex-col md:flex-row md:items-center items-start md:justify-between gap-4 mb-4">
+          <div className="w-full md:w-auto">
             <DateRangePicker />
           </div>
-          <div className="flex flex-col md:flex-row items-center justify-between gap-x-5 gap-y-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
             <select
               name="status"
-              //   value={selectedStatus}
-              //   onChange={handleStatusChange}
-              className="py-2 px-4 rounded-lg bg-[#f4f2f2] font-open-sans font-semibold text-sm cursor-pointer"
+              className="py-2 px-4 rounded-lg bg-[#f4f2f2] font-open-sans font-semibold text-sm cursor-pointer w-full"
             >
               <option value="">All Statuses</option>
               <option value="Delivered">Delivered</option>
@@ -89,9 +95,10 @@ const OrderDetails: React.FC = () => {
             <button
               type="button"
               onClick={handlePrint}
-              className="py-2 px-4 rounded-lg bg-[#f4f2f2] cursor-pointer text-[#232321]"
+              className="py-2 px-4 rounded-lg bg-[#f4f2f2] cursor-pointer text-[#232321] flex items-center justify-center gap-2"
             >
-              <Printer />
+              <Printer size={18} />
+              <span className="sm:hidden">Print</span>
             </button>
             <button
               type="button"
@@ -101,22 +108,30 @@ const OrderDetails: React.FC = () => {
             </button>
           </div>
         </div>
+
+        {/* Info Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="p-6 rounded-2xl border border-[#E7E7E3]">
-            <div className="flex items-start gap-x-4 mb-4">
-              <div className="p-4 rounded-lg bg-[#232321]">
-                <User color="#fff" />
+          {/* Customer Card */}
+          <div className="p-4 md:p-6 rounded-2xl border border-[#E7E7E3]">
+            <div className="flex items-start gap-3 md:gap-4 mb-4">
+              <div className="p-3 md:p-4 rounded-lg bg-[#232321] flex-shrink-0">
+                <User color="#fff" size={20} />
               </div>
               <div className="flex flex-col items-start">
-                <h5 className="font-semibold text-xl mb-2">Customer</h5>
-                <p className="font-open-sans font-semibold text-base !text-[#70706E] mb-2">
-                  Full Name: <span>{order?.customerName}</span>
+                <h5 className="font-semibold text-lg md:text-xl mb-2">
+                  Customer
+                </h5>
+                <p className="font-open-sans font-semibold text-sm md:text-base !text-[#70706E] mb-1 md:mb-2">
+                  Full Name:{" "}
+                  <span className="text-black">{order?.customerName}</span>
                 </p>
-                <p className="font-open-sans font-semibold text-base !text-[#70706E] mb-2">
-                  Email: <span>{order?.customerEmail}</span>
+                <p className="font-open-sans font-semibold text-sm md:text-base !text-[#70706E] mb-1 md:mb-2">
+                  Email:{" "}
+                  <span className="text-black">{order?.customerEmail}</span>
                 </p>
-                <p className="font-open-sans font-semibold text-base !text-[#70706E]">
-                  Phone: <span>{order?.customerPhone}</span>
+                <p className="font-open-sans font-semibold text-sm md:text-base !text-[#70706E]">
+                  Phone:{" "}
+                  <span className="text-black">{order?.customerPhone}</span>
                 </p>
               </div>
             </div>
@@ -124,21 +139,27 @@ const OrderDetails: React.FC = () => {
               View Profile
             </button>
           </div>
-          <div className="p-6 rounded-2xl border border-[#E7E7E3]">
-            <div className="flex items-start gap-x-4 mb-4">
-              <div className="p-4 rounded-lg bg-[#232321]">
-                <BsHandbag color="#fff" />
+
+          {/* Order Info Card */}
+          <div className="p-4 md:p-6 rounded-2xl border border-[#E7E7E3]">
+            <div className="flex items-start gap-3 md:gap-4 mb-4">
+              <div className="p-3 md:p-4 rounded-lg bg-[#232321] flex-shrink-0">
+                <BsHandbag color="#fff" size={20} />
               </div>
               <div className="flex flex-col items-start">
-                <h5 className="font-semibold text-xl mb-2">Order Info</h5>
-                <p className="font-open-sans font-semibold text-base !text-[#70706E] mb-2">
-                  Shipping: <span>{order?.shipping}</span>
+                <h5 className="font-semibold text-lg md:text-xl mb-2">
+                  Order Info
+                </h5>
+                <p className="font-open-sans font-semibold text-sm md:text-base !text-[#70706E] mb-1 md:mb-2">
+                  Shipping:{" "}
+                  <span className="text-black">{order?.shipping}</span>
                 </p>
-                <p className="font-open-sans font-semibold text-base !text-[#70706E] mb-2">
-                  Payment Method: <span>{order?.paymentMethod}</span>
+                <p className="font-open-sans font-semibold text-sm md:text-base !text-[#70706E] mb-1 md:mb-2">
+                  Payment:{" "}
+                  <span className="text-black">{order?.paymentMethod}</span>
                 </p>
-                <p className="font-open-sans font-semibold text-base !text-[#70706E]">
-                  Status: <span>{order?.status}</span>
+                <p className="font-open-sans font-semibold text-sm md:text-base !text-[#70706E]">
+                  Status: <span className="text-black">{order?.status}</span>
                 </p>
               </div>
             </div>
@@ -146,15 +167,20 @@ const OrderDetails: React.FC = () => {
               Download info
             </button>
           </div>
-          <div className="p-6 rounded-2xl border border-[#E7E7E3]">
-            <div className="flex items-start gap-x-4 mb-4">
-              <div className="p-4 rounded-lg bg-[#232321]">
-                <BsHandbag color="#fff" />
+
+          {/* Delivery Card */}
+          <div className="p-4 md:p-6 rounded-2xl border border-[#E7E7E3]">
+            <div className="flex items-start gap-3 md:gap-4 mb-4">
+              <div className="p-3 md:p-4 rounded-lg bg-[#232321] flex-shrink-0">
+                <BsHandbag color="#fff" size={20} />
               </div>
               <div className="flex flex-col items-start">
-                <h5 className="font-semibold text-xl mb-2">Deliver to</h5>
-                <p className="font-open-sans font-semibold text-base !text-[#70706E] mb-2">
-                  Address: <span>{order?.customerAddress}</span>
+                <h5 className="font-semibold text-lg md:text-xl mb-2">
+                  Deliver to
+                </h5>
+                <p className="font-open-sans font-semibold text-sm md:text-base !text-[#70706E]">
+                  Address:{" "}
+                  <span className="text-black">{order?.customerAddress}</span>
                 </p>
               </div>
             </div>
@@ -163,92 +189,101 @@ const OrderDetails: React.FC = () => {
             </button>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-          <div className="p-6 rounded-2xl border border-[#E7E7E3]">
+
+        {/* Payment Info and Notes */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6">
+          <div className="p-4 md:p-6 rounded-2xl border border-[#E7E7E3]">
             <div className="flex flex-col items-start">
-              <h5 className="font-semibold text-xl mb-2">Payment Info</h5>
-              <p className="font-open-sans font-semibold text-base !text-[#70706E] mb-2">
-                Card Number:{" "}
-                <span>
+              <h5 className="font-semibold text-lg md:text-xl mb-2">
+                Payment Info
+              </h5>
+              <p className="font-open-sans font-semibold text-sm md:text-base !text-[#70706E] mb-1 md:mb-2">
+                Card:{" "}
+                <span className="text-black">
                   {order?.paymentMethod} {order?.cardNumber}
                 </span>
               </p>
-              <p className="font-open-sans font-semibold text-base !text-[#70706E] mb-2">
-                Busuness name: <span>{order?.customerName}</span>
+              <p className="font-open-sans font-semibold text-sm md:text-base !text-[#70706E] mb-1 md:mb-2">
+                Business:{" "}
+                <span className="text-black">{order?.customerName}</span>
               </p>
-              <p className="font-open-sans font-semibold text-base !text-[#70706E]">
-                Phone: <span>{order?.customerPhone}</span>
+              <p className="font-open-sans font-semibold text-sm md:text-base !text-[#70706E]">
+                Phone:{" "}
+                <span className="text-black">{order?.customerPhone}</span>
               </p>
             </div>
           </div>
-          <div className="col-span-2">
-            <h5 className="font-semibold text-xl mb-2">Note</h5>
+          <div className="lg:col-span-2">
+            <h5 className="font-semibold text-lg md:text-xl mb-2">Note</h5>
             <textarea
               name="note"
               rows={3}
               placeholder="Type some notes"
-              className="w-full h-[160px] p-4 rounded-2xl border border-[#E7E7E3] placeholder:font-open-sans placeholder:text-[#70706E] placeholder:text-base font-open-sans text-base !text-[#70706E]"
+              className="w-full min-h-[120px] md:h-[160px] p-4 rounded-2xl border border-[#E7E7E3] placeholder:font-open-sans placeholder:text-[#70706E] placeholder:text-sm md:placeholder:text-base font-open-sans text-sm md:text-base !text-[#70706E]"
             ></textarea>
           </div>
         </div>
       </div>
+
+      {/* Printable Content */}
       <div id="print-content">
-        <div className="py-6 px-4 bg-[#fafafa] rounded-2xl">
-          {/* Table header remains the same */}
+        <div className="py-4 md:py-6 px-4 bg-[#fafafa] rounded-2xl">
+          {/* Products Table Header */}
           <div className="flex items-center justify-between mb-2 border-b border-[#232321]/20 pb-4">
             <div>
-              <p className="font-rubik font-semibold text-sm !text-black">
+              <p className="font-rubik font-semibold text-sm md:text-base !text-black">
                 Products
               </p>
             </div>
             <div>
-              <EllipsisVerticalIcon />
+              <EllipsisVerticalIcon size={20} />
             </div>
           </div>
 
-          <div className="relative h-4/5 mt-4 overflow-x-auto mb-4">
+          {/* Products Table */}
+          <div className="overflow-x-auto mb-4">
             <table className="w-full">
-              <thead className="border-b border-[#232321]/20">
+              <thead className="border-b md:border-1 border-none border-[#232321]/20">
                 <tr>
-                  <td
+                  <th
                     scope="col"
-                    className="px-2 py-4 font-rubik font-medium !text-[#232321]/80 max-sm:hidden"
+                    className="px-2 py-3 font-rubik font-medium !text-[#232321]/80 text-left table-cell"
                   >
                     Product Name
-                  </td>
-                  <td
+                  </th>
+                  <th
                     scope="col"
-                    className="px-2 py-4 font-rubik font-medium !text-[#232321]/80 max-sm:hidden"
+                    className="px-2 py-3 font-rubik font-medium !text-[#232321]/80 text-left hidden md:table-cell"
                   >
                     Order ID
-                  </td>
-                  <td
+                  </th>
+                  <th
                     scope="col"
-                    className="px-2 py-4 font-rubik font-medium !text-[#232321]/80"
+                    className="px-2 py-3 font-rubik font-medium !text-[#232321]/80 text-left"
                   >
-                    Quantity
-                  </td>
-                  <td
+                    Qty
+                  </th>
+                  <th
                     scope="col"
-                    className="px-2 py-4 font-rubik font-medium !text-[#232321]/80 max-sm:hidden"
+                    className="px-2 py-3 font-rubik font-medium !text-[#232321]/80 text-left table-cell"
                   >
                     Total
-                  </td>
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {order.product.map((product, index) => (
-                  <tr key={index} className="border-b border-[#232321]/20">
-                    <td className="px-2 py-4 font-open-sans font-semibold !text-black text-base max-sm:hidden">
-                      <div className="flex items-center flex-wrap gap-x-4">
-                        <div>
+                  <tr key={index} className="border-b md:border-1 border-none border-[#232321]/20">
+                    <td className="px-2 py-3 font-open-sans font-semibold !text-black text-sm md:text-base table-cell">
+                      <div className="flex items-center flex-wrap gap-2 md:gap-4">
+                        <div className="hidden md:table-cell">
                           <input type="checkbox" />
                         </div>
-                        <div>
+                        <div className="hidden md:table-cell">
                           <img
                             src={product?.productImg}
-                            alt=""
-                            className="w-[40px] h-[40px] object-cover"
+                            alt={product?.productName}
+                            className="w-[30px] h-[30px] md:w-[40px] md:h-[40px] object-cover"
                           />
                         </div>
                         <div>
@@ -256,13 +291,13 @@ const OrderDetails: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-2 py-4 font-open-sans font-semibold !text-black text-base max-sm:hidden">
+                    <td className="px-2 py-3 font-open-sans font-semibold !text-black text-sm md:text-base hidden md:table-cell">
                       {product?.productId}
                     </td>
-                    <td className="px-2 py-4 font-open-sans font-semibold !text-black text-base max-sm:hidden">
+                    <td className="px-2 py-3 font-open-sans font-semibold !text-black text-sm md:text-base">
                       {product?.productQuantity}
                     </td>
-                    <td className="px-2 py-4 font-open-sans font-semibold !text-black text-base max-sm:hidden">
+                    <td className="px-2 py-3 font-open-sans font-semibold !text-black text-sm md:text-base table-cell">
                       {currency} {product?.productPrice}
                     </td>
                   </tr>
@@ -271,48 +306,49 @@ const OrderDetails: React.FC = () => {
             </table>
           </div>
 
+          {/* Order Summary */}
           <div className="flex flex-col">
-            <div className="flex items-center justify-between mb-4">
-              <p className="font-open-sans font-semibold text-base !text-[#232321] me-[146px]">
+            <div className="flex items-center justify-between mb-3">
+              <p className="font-open-sans font-semibold text-sm md:text-base !text-[#232321]">
                 Subtotal
               </p>
-              <p className="font-open-sans font-semibold text-base !text-[#232321]">
+              <p className="font-open-sans font-semibold text-sm md:text-base !text-[#232321]">
                 {currency}
                 {subtotal.toFixed(2)}
               </p>
             </div>
-            <div className="flex items-center justify-between mb-4">
-              <p className="font-open-sans font-semibold text-base !text-[#232321] me-[146px]">
+            <div className="flex items-center justify-between mb-3">
+              <p className="font-open-sans font-semibold text-sm md:text-base !text-[#232321]">
                 Tax (20%)
               </p>
-              <p className="font-open-sans font-semibold text-base !text-[#232321]">
+              <p className="font-open-sans font-semibold text-sm md:text-base !text-[#232321]">
                 {currency}
                 {tax.toFixed(2)}
               </p>
             </div>
-            <div className="flex items-center justify-between mb-4">
-              <p className="font-open-sans font-semibold text-base !text-[#232321] me-[146px]">
+            <div className="flex items-center justify-between mb-3">
+              <p className="font-open-sans font-semibold text-sm md:text-base !text-[#232321]">
                 Discount
               </p>
-              <p className="font-open-sans font-semibold text-base !text-[#232321]">
+              <p className="font-open-sans font-semibold text-sm md:text-base !text-[#232321]">
                 {currency}
                 {discount.toFixed(2)}
               </p>
             </div>
-            <div className="flex items-center justify-between mb-4">
-              <p className="font-open-sans font-semibold text-base !text-[#232321] me-[146px]">
-                Shipping Rate
+            <div className="flex items-center justify-between mb-3">
+              <p className="font-open-sans font-semibold text-sm md:text-base !text-[#232321]">
+                Shipping
               </p>
-              <p className="font-open-sans font-semibold text-base !text-[#232321]">
+              <p className="font-open-sans font-semibold text-sm md:text-base !text-[#232321]">
                 {currency}
                 {shippingRate.toFixed(2)}
               </p>
             </div>
-            <div className="flex items-center justify-between mb-4">
-              <p className="font-open-sans font-semibold text-2xl !text-[#232321] me-[146px]">
+            <div className="flex items-center justify-between mb-3 pt-3 border-t border-[#232321]/20">
+              <p className="font-open-sans font-semibold text-lg md:text-2xl !text-[#232321]">
                 Total
               </p>
-              <p className="font-open-sans font-semibold text-2xl !text-[#232321]">
+              <p className="font-open-sans font-semibold text-lg md:text-2xl !text-[#232321]">
                 {currency}
                 {total.toFixed(2)}
               </p>
@@ -320,7 +356,7 @@ const OrderDetails: React.FC = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

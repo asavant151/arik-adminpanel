@@ -7,8 +7,10 @@ import OrderList from "./pages/admin/OrderList.tsx";
 import Dashboard from "./pages/admin/Dashboard.tsx";
 import OrderDetails from "./pages/admin/OrderDetails.tsx";
 import AddProduct from "./pages/admin/AddProduct.tsx";
+import { AuthProvider } from "./context/AuthContext";
 const App = () => {
   return (
+    <AuthProvider>
     <Routes>
       <Route path="/" element={<Register />} />
       <Route path="/login" element={<Login />} />
@@ -20,6 +22,7 @@ const App = () => {
         <Route path="addProduct" element={<AddProduct />} />
       </Route>
     </Routes>
+    </AuthProvider>
   );
 };
 

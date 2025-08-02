@@ -1,39 +1,34 @@
-import React, { useState } from "react";
-import {
-  authImage,
-  appleLogo,
-  googleLogo,
-  facebookLogo,
-} from "../assets/assets";
-import { ArrowRightIcon } from "lucide-react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { useFormik } from 'formik';
+import { ArrowRightIcon } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { authImage, appleLogo, googleLogo, facebookLogo } from '../assets/assets';
+import { registerSchema } from '../schemas/validationSchemas';
+import { useAuth } from '../context/AuthContext';
+
 const Register: React.FC = () => {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    agreeTerms: false,
-    keepLoggedIn: false,
+  const { register } = useAuth();
+  const navigate = useNavigate();
+
+  const formik = useFormik({
+    initialValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      agreeTerms: false,
+      keepLoggedIn: false,
+    },
+    validationSchema: registerSchema,
+    onSubmit: (values) => {
+      register(values);
+      navigate('/login');
+    },
   });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle registration logic here
-    console.log(formData);
-  };
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-50 xl:p-0 p-4">
-      {/* Image Section - Replace with your actual image */}
+      {/* Image Section */}
       <div className="md:w-1/2">
         <img src={authImage} alt="authImage" className="object-contain" />
       </div>
@@ -45,21 +40,21 @@ const Register: React.FC = () => {
 
           <div className="mb-6">
             <p className="mb-6 font-semibold text-xl">Sign up with</p>
-            <div className="flex items-center flex-wrap space-x-4 xl:space-y-0 space-y-4 mb-6">
+            <div className="flex items-center flex-wrap gap-4 mb-6">
               <button className="py-4 px-12 rounded-xl bg-transparent border border-solid border-[#141218] cursor-pointer">
-                <img src={googleLogo} alt="" />
+                <img src={googleLogo} alt="Google" />
               </button>
               <button className="py-4 px-12 rounded-xl bg-transparent border border-solid border-[#141218] cursor-pointer">
-                <img src={appleLogo} alt="" />
+                <img src={appleLogo} alt="Apple" />
               </button>
               <button className="py-4 px-12 rounded-xl bg-transparent border border-solid border-[#141218] cursor-pointer">
-                <img src={facebookLogo} alt="" />
+                <img src={facebookLogo} alt="Facebook" />
               </button>
             </div>
             <span className="font-semibold text-xl">OR</span>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={formik.handleSubmit} className="space-y-4">
             <div>
               <label className="block text-2xl font-bold mb-5 font-rubik">
                 Your Name
@@ -69,11 +64,14 @@ const Register: React.FC = () => {
                 id="firstName"
                 name="firstName"
                 placeholder="First Name"
-                value={formData.firstName}
-                onChange={handleChange}
-                className="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#003F62] focus:border-[#003F62] placeholder:text-[#79767C] mb-5"
-                required
+                value={formik.values.firstName}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#003F62] focus:border-[#003F62] placeholder:text-[#79767C] mb-2"
               />
+              {formik.touched.firstName && formik.errors.firstName ? (
+                <div className="text-red-500 text-sm font-rubik font-semibold">{formik.errors.firstName}</div>
+              ) : null}
             </div>
 
             <div>
@@ -82,11 +80,14 @@ const Register: React.FC = () => {
                 id="lastName"
                 name="lastName"
                 placeholder="Last Name"
-                value={formData.lastName}
-                onChange={handleChange}
-                className="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#003F62] focus:border-[#003F62] placeholder:text-[#79767C] mb-6"
-                required
+                value={formik.values.lastName}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#003F62] focus:border-[#003F62] placeholder:text-[#79767C] mb-4"
               />
+              {formik.touched.lastName && formik.errors.lastName ? (
+                <div className="text-red-500 text-sm font-rubik font-semibold">{formik.errors.lastName}</div>
+              ) : null}
             </div>
 
             <label className="block text-2xl font-bold mb-5 font-rubik">
@@ -98,12 +99,15 @@ const Register: React.FC = () => {
                 type="email"
                 id="email"
                 name="email"
-                value={formData.email}
-                onChange={handleChange}
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 placeholder="Email"
-                className="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#003F62] focus:border-[#003F62] placeholder:text-[#79767C] mb-5"
-                required
+                className="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#003F62] focus:border-[#003F62] placeholder:text-[#79767C] mb-2"
               />
+              {formik.touched.email && formik.errors.email ? (
+                <div className="text-red-500 text-sm font-rubik font-semibold">{formik.errors.email}</div>
+              ) : null}
             </div>
 
             <div>
@@ -111,14 +115,15 @@ const Register: React.FC = () => {
                 type="password"
                 id="password"
                 name="password"
-                value={formData.password}
-                onChange={handleChange}
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 placeholder="Password"
                 className="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#003F62] focus:border-[#003F62] placeholder:text-[#79767C]"
-                required
-                minLength={8}
-                pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
               />
+              {formik.touched.password && formik.errors.password ? (
+                <div className="text-red-500 text-sm font-rubik font-semibold">{formik.errors.password}</div>
+              ) : null}
               <p className="mt-1 text-xs text-gray-500">
                 Minimum 8 characters with at least one uppercase, one lowercase,
                 one special character and a number
@@ -131,29 +136,32 @@ const Register: React.FC = () => {
                   type="checkbox"
                   id="agreeTerms"
                   name="agreeTerms"
-                  checked={formData.agreeTerms}
-                  onChange={handleChange}
+                  checked={formik.values.agreeTerms}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                   className="h-3.5 w-3.5 border-gray-300 rounded"
-                  required
                 />
                 <label
                   htmlFor="agreeTerms"
                   className="ml-2 block text-base font-semibold font-open-sans"
                 >
-                  By clicking 'Register' you agree to our website{" "}
+                  By clicking 'Register' you agree to our website{' '}
                   <Link to="/" className="underline">
                     Terms & Conditions
                   </Link>
                 </label>
               </div>
+              {formik.touched.agreeTerms && formik.errors.agreeTerms ? (
+                <div className="text-red-500 text-sm font-rubik font-semibold">{formik.errors.agreeTerms}</div>
+              ) : null}
 
               <div className="flex items-center">
                 <input
                   type="checkbox"
                   id="keepLoggedIn"
                   name="keepLoggedIn"
-                  checked={formData.keepLoggedIn}
-                  onChange={handleChange}
+                  checked={formik.values.keepLoggedIn}
+                  onChange={formik.handleChange}
                   className="h-3.5 w-3.5 border-gray-300 rounded"
                 />
                 <label
@@ -175,6 +183,15 @@ const Register: React.FC = () => {
               </button>
             </div>
           </form>
+
+          <div className="mt-4 text-center">
+            <p className="text-sm text-gray-600">
+              Already have an account?{' '}
+              <Link to="/login" className="text-[#003F62] font-semibold">
+                Login here
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

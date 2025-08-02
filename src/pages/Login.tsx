@@ -1,63 +1,61 @@
-import React, { useState } from "react";
-import {
-  authImage,
-  appleLogo,
-  googleLogo,
-  facebookLogo,
-} from "../assets/assets";
-import { ArrowRightIcon } from "lucide-react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { useFormik } from 'formik';
+import { ArrowRightIcon } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { authImage, appleLogo, googleLogo, facebookLogo } from '../assets/assets';
+import { loginSchema } from '../schemas/validationSchemas';
+import { useAuth } from '../context/AuthContext';
+
 const Login: React.FC = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    keepLoggedIn: false,
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+      keepLoggedIn: false,
+    },
+    validationSchema: loginSchema,
+    onSubmit: (values) => {
+      login(values);
+      navigate('/admin');
+    },
   });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle registration logic here
-    console.log(formData);
-  };
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-50 xl:p-0 p-4">
-      {/* Image Section - Replace with your actual image */}
+      {/* Image Section */}
       <div className="md:w-1/2">
         <img src={authImage} alt="authImage" className="object-contain" />
       </div>
 
-      {/* Registration Form Section */}
+      {/* Login Form Section */}
       <div className="md:w-1/2 flex items-center justify-center text-left">
         <div className="w-full max-w-md">
           <h2 className="text-3xl font-bold mb-2">Login</h2>
           <Link
-            to="/"
+            to="/forgot-password"
             className="font-open-sans font-semibold text-base !text-[#70706E] !underline !underline-[#70706E]"
           >
             Forgot your password?
           </Link>
 
-          <form onSubmit={handleSubmit} className="space-y-4 mt-6">
+          <form onSubmit={formik.handleSubmit} className="space-y-4 mt-6">
             <div>
               <input
                 type="email"
                 id="email"
                 name="email"
-                value={formData.email}
-                onChange={handleChange}
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 placeholder="Email"
-                className="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#003F62] focus:border-[#003F62] placeholder:text-[#79767C] mb-5"
-                required
+                className="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#003F62] focus:border-[#003F62] placeholder:text-[#79767C] mb-2"
               />
+              {formik.touched.email && formik.errors.email ? (
+                <div className="text-red-500 text-sm font-rubik font-semibold">{formik.errors.email}</div>
+              ) : null}
             </div>
 
             <div>
@@ -65,14 +63,15 @@ const Login: React.FC = () => {
                 type="password"
                 id="password"
                 name="password"
-                value={formData.password}
-                onChange={handleChange}
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 placeholder="Password"
-                className="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#003F62] focus:border-[#003F62] placeholder:text-[#79767C]"
-                required
-                minLength={8}
-                pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+                className="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#003F62] focus:border-[#003F62] placeholder:text-[#79767C] mb-2"
               />
+              {formik.touched.password && formik.errors.password ? (
+                <div className="text-red-500 text-sm font-rubik font-semibold">{formik.errors.password}</div>
+              ) : null}
             </div>
 
             <div className="flex items-center">
@@ -80,8 +79,8 @@ const Login: React.FC = () => {
                 type="checkbox"
                 id="keepLoggedIn"
                 name="keepLoggedIn"
-                checked={formData.keepLoggedIn}
-                onChange={handleChange}
+                checked={formik.values.keepLoggedIn}
+                onChange={formik.handleChange}
                 className="h-3.5 w-3.5 border-gray-300 rounded"
               />
               <label
@@ -100,23 +99,32 @@ const Login: React.FC = () => {
               <ArrowRightIcon className="ml-2 h-5 w-5" />
             </button>
 
-            <div className="flex items-center flex-wrap space-x-4 xl:space-y-0 space-y-4 my-6">
+            <div className="flex items-center flex-wrap gap-4 my-6">
               <button className="py-4 px-12 rounded-xl bg-transparent border border-solid border-[#141218] cursor-pointer">
-                <img src={googleLogo} alt="" />
+                <img src={googleLogo} alt="Google" />
               </button>
               <button className="py-4 px-12 rounded-xl bg-transparent border border-solid border-[#141218] cursor-pointer">
-                <img src={appleLogo} alt="" />
+                <img src={appleLogo} alt="Apple" />
               </button>
               <button className="py-4 px-12 rounded-xl bg-transparent border border-solid border-[#141218] cursor-pointer">
-                <img src={facebookLogo} alt="" />
+                <img src={facebookLogo} alt="Facebook" />
               </button>
             </div>
             <p className="block text-base font-semibold font-open-sans">
-              By clicking 'Login' you agree to our website{" "}
-              <Link to="/" className="underline">
+              By clicking 'Login' you agree to our website{' '}
+              <Link to="/terms" className="underline">
                 Terms & Conditions
               </Link>
             </p>
+
+            <div className="mt-4 text-center">
+              <p className="text-sm text-gray-600">
+                Don't have an account?{' '}
+                <Link to="/register" className="text-[#003F62] font-semibold">
+                  Register here
+                </Link>
+              </p>
+            </div>
           </form>
         </div>
       </div>

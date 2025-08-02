@@ -19,9 +19,19 @@ const OrderList: React.FC = () => {
     endDate: null,
   });
   const [filteredItems, setFilteredItems] = useState(RecentPurchaseItems);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const itemsPerPage = 8;
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleOrderDetails = (orderId: string) => {
     navigate(`/admin/orderList/${orderId}`);
@@ -73,10 +83,10 @@ const OrderList: React.FC = () => {
     setSelectedStatus(e.target.value);
   };
 
-  // Function to generate page numbers with ellipsis (same as before)
+  // Function to generate page numbers with ellipsis
   const getPageNumbers = () => {
     const pageNumbers = [];
-    const maxVisiblePages = 4;
+    const maxVisiblePages = isMobile ? 2 : 4;
 
     if (totalPages <= maxVisiblePages + 3) {
       for (let i = 1; i <= totalPages; i++) {
@@ -113,26 +123,29 @@ const OrderList: React.FC = () => {
   };
 
   return (
-    <>
-      <div className="flex items-center justify-between mb-6">
+    <div>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
         <Title title="Orders List" subtitle="Home > Orders List" />
-        <DateRangePicker onDateRangeChange={handleDateRangeChange} />
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="w-auto">
+            <DateRangePicker onDateRangeChange={handleDateRangeChange} />
+          </div>
+          <select
+            name="status"
+            value={selectedStatus}
+            onChange={handleStatusChange}
+            className="p-3 rounded-lg bg-[#f4f2f2] font-open-sans font-semibold text-sm cursor-pointer w-auto"
+          >
+            <option value="">All Statuses</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Processing">Processing</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
       </div>
-      <div className="flex items-center justify-end mb-6">
-        <select
-          name="status"
-          value={selectedStatus}
-          onChange={handleStatusChange}
-          className="p-3 rounded-lg bg-[#f4f2f2] font-open-sans font-semibold text-sm cursor-pointer"
-        >
-          <option value="">All Statuses</option>
-          <option value="Delivered">Delivered</option>
-          <option value="Processing">Processing</option>
-          <option value="Cancelled">Cancelled</option>
-        </select>
-      </div>
-      <div className="py-6 px-4 bg-[#fafafa] rounded-2xl">
-        {/* Table header remains the same */}
+      
+      <div className="py-6 px-4 bg-[#fafafa] rounded-2xl overflow-hidden">
+        {/* Table header */}
         <div className="flex items-center justify-between mb-2 border-b border-[#232321]/20 pb-4">
           <div>
             <p className="font-rubik font-semibold text-sm !text-black">
@@ -145,7 +158,7 @@ const OrderList: React.FC = () => {
         </div>
 
         {/* Table content with filtered items */}
-        <div className="relative h-4/5 mt-4 overflow-x-auto">
+        <div className="mt-4 overflow-x-auto">
           <table className="w-full">
             <thead className="border-b border-[#232321]/20">
               <tr>
@@ -154,13 +167,13 @@ const OrderList: React.FC = () => {
                 </td>
                 <td
                   scope="col"
-                  className="px-2 py-4 font-rubik font-medium !text-[#232321]/80 max-sm:hidden"
+                  className="px-2 py-4 font-rubik font-medium !text-[#232321]/80 hidden sm:table-cell"
                 >
                   Product
                 </td>
                 <td
                   scope="col"
-                  className="px-2 py-4 font-rubik font-medium !text-[#232321]/80 max-sm:hidden"
+                  className="px-2 py-4 font-rubik font-medium !text-[#232321]/80 hidden md:table-cell"
                 >
                   Order ID
                 </td>
@@ -172,7 +185,7 @@ const OrderList: React.FC = () => {
                 </td>
                 <td
                   scope="col"
-                  className="px-2 py-4 font-rubik font-medium !text-[#232321]/80 max-sm:hidden"
+                  className="px-2 py-4 font-rubik font-medium !text-[#232321]/80 hidden sm:table-cell"
                 >
                   Customer Name
                 </td>
@@ -198,7 +211,7 @@ const OrderList: React.FC = () => {
                     onClick={() => handleOrderDetails(items.orderId)}
                     className="cursor-pointer hover:bg-[#232321]/5 transition-colors border-b border-[#232321]/20"
                   >
-                    <RecentPurchaseTableItem {...items} />
+                    <RecentPurchaseTableItem {...items} isMobile={isMobile} />
                   </tr>
                 ))
               ) : (
@@ -218,7 +231,7 @@ const OrderList: React.FC = () => {
 
       {/* Pagination controls - only show if there are items */}
       {filteredItems.length > 0 && (
-        <div className="flex justify-start items-center mt-6 gap-2">
+        <div className="flex justify-center md:justify-start items-center mt-6 gap-2 flex-wrap">
           <button
             onClick={() => paginate(Math.max(1, currentPage - 1))}
             disabled={currentPage === 1}
@@ -233,14 +246,14 @@ const OrderList: React.FC = () => {
 
           {getPageNumbers().map((number, index) =>
             number === "..." ? (
-              <span key={index} className="px-3 py-1">
+              <span key={index} className="px-1 md:px-3 py-1">
                 ...
               </span>
             ) : (
               <button
                 key={index}
                 onClick={() => paginate(Number(number))}
-                className={`font-rubik font-medium py-2 px-4 rounded-lg mx-1 flex items-center justify-center cursor-pointer ${
+                className={`font-rubik font-medium py-1 px-2 md:py-2 md:px-4 rounded-lg mx-1 flex items-center justify-center cursor-pointer ${
                   currentPage === number
                     ? "bg-[#232321] !text-white"
                     : "bg-transparent border border-[#232321] text-[#232321]"
@@ -264,7 +277,7 @@ const OrderList: React.FC = () => {
           </button>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
